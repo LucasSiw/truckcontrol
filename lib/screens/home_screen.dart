@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:truckcontrol/screens/configurar_frete_screen.dart';
+import 'package:truckcontrol/screens/frete_screen.dart';
+import 'package:truckcontrol/screens/gastos_screen.dart';
 import '../providers/viagem_provider.dart';
-import 'frete_screen.dart';
-import 'gastos_screen.dart';
-import 'configurar_frete_screen.dart';
+import '../components/responsive_menu.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Controle de Viagens')),
+      appBar: AppBar(
+        title: Text('Controle de Viagens'),
+        actions: [
+          ResponsiveMenu(),
+        ],
+      ),
       body: Consumer<ViagemProvider>(
         builder: (context, viagemProvider, child) {
           final resumoMensal = _calcularResumoMensal(viagemProvider);

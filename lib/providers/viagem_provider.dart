@@ -8,6 +8,7 @@ class ViagemProvider with ChangeNotifier {
   List<Viagem> _viagens = [];
   List<Gasto> _gastos = [];
   double _valorFreteFixo = 0;
+  List<String> _descricoesPadrao = [];
   final SharedPreferences _prefs;
 
   ViagemProvider(this._prefs) {
@@ -17,6 +18,7 @@ class ViagemProvider with ChangeNotifier {
   List<Viagem> get viagens => _viagens;
   List<Gasto> get gastos => _gastos;
   double get valorFreteFixo => _valorFreteFixo;
+  List<String> get descricoesPadrao => _descricoesPadrao;
 
   void _carregarDados() {
     final viagensString = _prefs.getString('viagens');
@@ -32,6 +34,11 @@ class ViagemProvider with ChangeNotifier {
     }
 
     _valorFreteFixo = _prefs.getDouble('valorFreteFixo') ?? 0;
+
+    final descricoesPadraoString = _prefs.getString('descricoesPadrao');
+    if (descricoesPadraoString != null) {
+      _descricoesPadrao = List<String>.from(jsonDecode(descricoesPadraoString));
+    }
 
     notifyListeners();
   }
@@ -66,6 +73,18 @@ class ViagemProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> adicionarDescricaoPadrao(String descricao) async {
+    _descricoesPadrao.add(descricao);
+    await _salvarDescricoesPadrao();
+    notifyListeners();
+  }
+
+  Future<void> removerDescricaoPadrao(String descricao) async {
+    _descricoesPadrao.remove(descricao);
+    await _salvarDescricoesPadrao();
+    notifyListeners();
+  }
+
   Future<void> _salvarViagens() async {
     final viagensJson = _viagens.map((e) => e.toJson()).toList();
     await _prefs.setString('viagens', jsonEncode(viagensJson));
@@ -74,6 +93,10 @@ class ViagemProvider with ChangeNotifier {
   Future<void> _salvarGastos() async {
     final gastosJson = _gastos.map((e) => e.toJson()).toList();
     await _prefs.setString('gastos', jsonEncode(gastosJson));
+  }
+
+  Future<void> _salvarDescricoesPadrao() async {
+    await _prefs.setString('descricoesPadrao', jsonEncode(_descricoesPadrao));
   }
 }
 
