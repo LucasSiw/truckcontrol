@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:truckcontrol/main.dart';
-import 'package:truckcontrol/shared_preferences_mock.mocks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    final mockPrefs = MockSharedPreferences();
+  testWidgets('App initialization test', (WidgetTester tester) async {
+    // Set up a fake SharedPreferences instance
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
 
-    // Configure o comportamento do mock
-    when(mockPrefs.getString(any)).thenReturn('');
+    // Build our app and trigger a frame.
+    await tester.pumpWidget(MyApp(prefs: prefs));
 
-    await tester.pumpWidget(MyApp(prefs: mockPrefs));
+    // Verify that the app title is displayed
+    expect(find.text('Controle de Viagens'), findsOneWidget);
 
-    // Verifique o estado inicial do contador.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the ResponsiveMenu is present
+    expect(find.byType(PopupMenuButton), findsOneWidget);
 
-    // Simule o toque no botão "+".
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // Verify that the initial state shows Viagens and Gastos sections
+    expect(find.text('Viagens'), findsOneWidget);
+    expect(find.text('Gastos'), findsOneWidget);
 
-    // Verifique se o contador foi incrementado.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the Resumo Mensal is displayed
+    expect(find.text('Resumo Mensal'), findsOneWidget);
   });
 }
+
